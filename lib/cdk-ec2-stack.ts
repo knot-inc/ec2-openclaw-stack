@@ -27,12 +27,15 @@ export class CdkEc2Stack extends cdk.Stack {
       allowAllOutbound: true,
     });
 
-    // Create IAM role for EC2 instance (enables Session Manager)
+    // Create IAM role for EC2 instance (enables Session Manager and Bedrock access)
     const role = new iam.Role(this, "InstanceRole", {
       assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           "AmazonSSMManagedInstanceCore",
+        ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          "AmazonBedrockFullAccess",
         ),
       ],
     });
