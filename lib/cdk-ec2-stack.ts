@@ -58,6 +58,12 @@ export class CdkEc2Stack extends cdk.Stack {
       associatePublicIpAddress: true,
     });
 
+    // Prevent the instance from being deleted or replaced by CloudFormation
+    const cfnInstance = instance.node.defaultChild as cdk.CfnResource;
+    cfnInstance.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN, {
+      applyToUpdateReplacePolicy: true,
+    });
+
     // Output the instance public IP and instance ID
     new cdk.CfnOutput(this, "InstanceId", {
       value: instance.instanceId,
