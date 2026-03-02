@@ -34,9 +34,7 @@ export class CdkEc2Stack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           "AmazonSSMManagedInstanceCore",
         ),
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          "AmazonBedrockFullAccess",
-        ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonBedrockFullAccess"),
       ],
     });
 
@@ -78,6 +76,46 @@ export class CdkEc2Stack extends cdk.Stack {
     new cdk.CfnOutput(this, "SSMConnectCommand", {
       value: `aws ssm start-session --target ${instance.instanceId} --region ${this.region}`,
       description: "Command to connect via Session Manager",
+    });
+
+    // OpenClaw Dev instance for the dev team
+    const devInstance = new ec2.Instance(this, "clawInstanceDev", {
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.T3,
+        ec2.InstanceSize.SMALL,
+      ),
+      machineImage: ec2.MachineImage.genericLinux({
+        "us-west-2": "ami-0320940581663281e", // Amazon Linux 2023 - fixed version
+      }),
+      securityGroup,
+      role,
+      associatePublicIpAddress: true,
+    });
+
+    // Prevent the dev instance from being deleted or replaced by CloudFormation
+    const cfnDevInstance = devInstance.node.defaultChild as cdk.CfnResource;
+    cfnDevInstance.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN, {
+      applyToUpdateReplacePolicy: true,
+    });
+
+    new cdk.CfnOutput(this, "DevInstanceId", {
+      value: devInstance.instanceId,
+      description: "OpenClaw Dev EC2 Instance ID",
+    });
+
+    new cdk.CfnOutput(this, "DevInstancePublicIp", {
+      value: devInstance.instancePublicIp,
+      description: "OpenClaw Dev EC2 Instance Public IP",
+    });
+
+    new cdk.CfnOutput(this, "DevSSMConnectCommand", {
+      value: `aws ssm start-session --target ${devInstance.instanceId} --region ${this.region}`,
+      description:
+        "Command to connect to OpenClaw Dev instance via Session Manager",
     });
   }
 }
