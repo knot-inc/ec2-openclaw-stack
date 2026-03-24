@@ -5,11 +5,29 @@ EC2 Instance for OpenClaw
 
 # Deploy
 
+## EC2 + dev instance role
+
+Deploys the OpenClaw EC2 instances and their IAM role (`OpenClawInstanceRole`) into the dev account. This is the standard deploy you run for any change to the EC2 or its permissions.
+
 ```
 npm install
 npx cdk synth --profile {profile} --region {region}
-npx cdk deploy --profile {profile} --region {region}
+pnpm deploy:dev
 ```
+
+## Cross-account role (prod access)
+
+Use this when you need OpenClaw to read AWS resources in the **prod account** (CloudWatch alarms, Step Functions executions, Lambda invocations). This deploys a single IAM role (`OpenClawCrossAccountRole`) into the prod account that trusts the dev account's `OpenClawInstanceRole`.
+
+Only needs to be run once (or when prod permissions change). Requires prod AWS credentials to be setup as noxx-prod.
+
+```
+PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:prod-role
+```
+
+Once deployed, the OpenClaw bot can assume the prod role at runtime using `sts:AssumeRole` — no credentials are stored on the instance.
+
+> **When to use:** Any time OpenClaw needs to inspect prod AWS resources (e.g. to investigate a CloudWatch alarm from `#z-notification-prod` and create a Linear task).
 
 # Connect to the instance
 

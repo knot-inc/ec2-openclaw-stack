@@ -1,0 +1,10 @@
+{
+  "CdkEc2Stack": {
+    "DevInstanceId": "i-0ae9d6a7fac1e3f5d",
+    "DevSSMConnectCommand": "aws ssm start-session --target i-0ae9d6a7fac1e3f5d --region us-west-2",
+    "InstanceId": "i-0a64bf83b0b286fa8",
+    "InstancePublicIp": "54.214.74.80",
+    "SSMConnectCommand": "aws ssm start-session --target i-0a64bf83b0b286fa8 --region us-west-2",
+    "DevInstancePublicIp": "44.243.208.211"
+  }
+}
