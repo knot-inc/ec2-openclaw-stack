@@ -12,17 +12,19 @@ Deploys the OpenClaw EC2 instances and their IAM role (`OpenClawInstanceRole`) i
 ```
 npm install
 npx cdk synth --profile {profile} --region {region}
-pnpm deploy:dev
+pnpm deploy:ec2-dev
 ```
 
 ## Cross-account role (prod access)
 
 Use this when you need OpenClaw to read AWS resources in the **prod account** (CloudWatch alarms, Step Functions executions, Lambda invocations). This deploys a single IAM role (`OpenClawCrossAccountRole`) into the prod account that trusts the dev account's `OpenClawInstanceRole`.
 
-Only needs to be run once (or when prod permissions change). Requires prod AWS credentials to be setup as noxx-prod.
+Only needs to be run once (or when prod permissions change). Requires prod AWS credentials to be setup as `noxx-prod`.
+
+`DEV_ACCOUNT_ID` must be set explicitly — CDK overwrites `CDK_DEFAULT_ACCOUNT` with the prod account when using the prod profile, so the trust policy would point to the wrong account without it.
 
 ```
-PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:prod-role
+DEV_ACCOUNT_ID=<dev-account-id> PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:iam-cross-account-prod
 ```
 
 Once deployed, the OpenClaw bot can assume the prod role at runtime using `sts:AssumeRole` — no credentials are stored on the instance.
