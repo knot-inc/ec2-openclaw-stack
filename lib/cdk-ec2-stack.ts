@@ -27,8 +27,11 @@ export class CdkEc2Stack extends cdk.Stack {
       allowAllOutbound: true,
     });
 
+    const prodAccountId = process.env.PROD_ACCOUNT_ID;
+
     // Create IAM role for EC2 instance (enables Session Manager and Bedrock access)
     const role = new iam.Role(this, "InstanceRole", {
+      roleName: "OpenClawInstanceRole",
       assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName(
@@ -37,6 +40,45 @@ export class CdkEc2Stack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonBedrockFullAccess"),
       ],
     });
+
+    // Permissions for the instance to access CloudWatch, Step Functions, and Lambda
+    // Dev environment
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          "cloudwatch:DescribeAlarms",
+          "cloudwatch:DescribeAlarmHistory",
+          "cloudwatch:GetMetricData",
+          "cloudwatch:ListMetrics",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents",
+          "logs:StartQuery",
+          "logs:GetQueryResults",
+          "states:DescribeExecution",
+          "states:GetExecutionHistory",
+          "states:ListExecutions",
+          "states:DescribeStateMachine",
+          "states:ListStateMachines",
+          "lambda:InvokeFunction",
+          "lambda:ListFunctions",
+        ],
+        resources: ["*"],
+      }),
+    );
+
+    // Prod account - cross-account access via assume role (only added when PROD_ACCOUNT_ID is set)
+    if (prodAccountId) {
+      role.addToPolicy(
+        new iam.PolicyStatement({
+          actions: ["sts:AssumeRole"],
+          resources: [
+            `arn:aws:iam::${prodAccountId}:role/OpenClawCrossAccountRole`,
+          ],
+        }),
+      );
+    }
 
     // Create the EC2 instance
     const instance = new ec2.Instance(this, "clawInstance", {
