@@ -5,7 +5,9 @@ import { CdkIamCrossAccountStack } from '../lib/cdk-iam-cross-account-stack';
 
 const app = new cdk.App();
 
-const devAccountId = process.env.CDK_DEFAULT_ACCOUNT;
+// DEV_ACCOUNT_ID must be set explicitly when deploying the prod cross-account stack,
+// because CDK_DEFAULT_ACCOUNT gets overwritten by CDK to match the --profile used.
+const devAccountId = process.env.DEV_ACCOUNT_ID ?? process.env.CDK_DEFAULT_ACCOUNT;
 const prodAccountId = process.env.PROD_ACCOUNT_ID;
 
 new CdkEc2Stack(app, 'CdkEc2Stack', {
