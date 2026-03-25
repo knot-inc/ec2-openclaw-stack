@@ -15,6 +15,11 @@ npx cdk synth --profile {profile} --region {region}
 pnpm deploy:ec2-dev
 ```
 
+> **Important:** If you also need cross-account prod access, deploy with `PROD_ACCOUNT_ID` set so the `sts:AssumeRole` policy is added to the instance role. Without it, the bot won't be able to assume the prod cross-account role at runtime:
+> ```
+> PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:ec2-dev
+> ```
+
 ## Cross-account role (prod access)
 
 Use this when you need OpenClaw to read AWS resources in the **prod account** (CloudWatch alarms, Step Functions executions, Lambda invocations). This deploys a single IAM role (`OpenClawCrossAccountRole`) into the prod account that trusts the dev account's `OpenClawInstanceRole`.
