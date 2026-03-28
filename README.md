@@ -16,6 +16,7 @@ pnpm deploy:ec2-dev
 ```
 
 > **Important:** If you also need cross-account prod access, deploy with `PROD_ACCOUNT_ID` set so the `sts:AssumeRole` policy is added to the instance role. Without it, the bot won't be able to assume the prod cross-account role at runtime:
+>
 > ```
 > PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:ec2-dev
 > ```
@@ -35,6 +36,14 @@ DEV_ACCOUNT_ID=<dev-account-id> PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:ia
 Once deployed, the OpenClaw bot can assume the prod role at runtime using `sts:AssumeRole` — no credentials are stored on the instance.
 
 > **When to use:** Any time OpenClaw needs to inspect prod AWS resources (e.g. to investigate a CloudWatch alarm from `#z-notification-prod` and create a Linear task).
+
+## External Claw EC2 instance
+
+Use this to create OpenClaw for accessing external service(e.g. Moltbook). This Claw is isolated and have a minimum access to our system to mitigate the risk of security issue.
+
+```
+pnpm deploy:ec2-external
+```
 
 # Connect to the instance
 
