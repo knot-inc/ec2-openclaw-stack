@@ -1,0 +1,7 @@
+{
+  "CdkEc2ExternalStack": {
+    "InstanceId": "i-0685705e646bac0ae",
+    "InstancePublicIp": "18.219.36.115",
+    "SSMConnectCommand": "aws ssm start-session --target i-0685705e646bac0ae --region us-east-2"
+  }
+}

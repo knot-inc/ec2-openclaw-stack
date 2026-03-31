@@ -10,6 +10,7 @@
     "test": "jest",
     "cdk": "cdk",
     "deploy:ec2-dev": "cdk deploy CdkEc2Stack --profile noxx --region us-west-2 -O output-dev.json",
+    "deploy:ec2-external": "cdk deploy CdkEc2ExternalStack --profile noxx --region us-east-2 -O output-external.json",
     "deploy:iam-cross-account-prod": "cdk deploy OpenClawCrossAccountProd --profile noxx-prod --region us-west-2 -O output-prod-role.json"
   },
   "devDependencies": {
