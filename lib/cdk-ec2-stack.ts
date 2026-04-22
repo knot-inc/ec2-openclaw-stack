@@ -1,6 +1,9 @@
+import * as path from "path";
 import * as cdk from "aws-cdk-lib";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as lambda_nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 
 export class CdkEc2Stack extends cdk.Stack {
@@ -65,6 +68,35 @@ export class CdkEc2Stack extends cdk.Stack {
           "lambda:ListFunctions",
         ],
         resources: ["*"],
+      }),
+    );
+
+    // Lambda: GitHub App token provider
+    // Handles all token generation logic (JWT signing + GitHub API) so EC2 stays logic-free.
+    const githubTokenProvider = new lambda_nodejs.NodejsFunction(
+      this,
+      "GithubTokenProvider",
+      {
+        functionName: "openclaw-github-token-provider",
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: "handler",
+        entry: path.join(
+          __dirname,
+          "../functions/github-token-provider/index.ts",
+        ),
+        timeout: cdk.Duration.seconds(30),
+        bundling: {
+          externalModules: ["@aws-sdk/client-secrets-manager"],
+        },
+      },
+    );
+
+    githubTokenProvider.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [
+          `arn:aws:secretsmanager:${this.region}:${this.account}:secret:/openclaw/github-app*`,
+        ],
       }),
     );
 
