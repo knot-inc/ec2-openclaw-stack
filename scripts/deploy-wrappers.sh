@@ -58,11 +58,11 @@ deploy_wrapper() {
   echo "  Done: $name"
 }
 
-deploy_wrapper "get-github-token.sh"
+# Git credential helper: called by git on every HTTPS clone/push/pull
 deploy_wrapper "get-git-credential.sh"
+# Refreshes the GitHub App token every 50 min via systemd env + openclaw config
+deploy_wrapper "refresh-github-token.sh"
 
 echo ""
 echo "Wrapper scripts deployed to $INSTANCE_ID."
 echo ""
-echo "Next: open an SSM session and run the one-time OpenClaw + git config commands:"
-echo "  aws ssm start-session --target $INSTANCE_ID --profile $PROFILE --region $REGION --document-name=AWS-StartInteractiveCommand --parameters command='[\"bash -l\"]'"
