@@ -14,9 +14,14 @@ TOKEN=$(python3 -c "import json; print(json.load(open('$TMPFILE'))['token'])")
 # Write token to EnvironmentFile so gateway picks it up on next start (survives reboots too)
 echo "GH_TOKEN=${TOKEN}" > /home/ssm-user/.openclaw/github-token.env
 
+# Keep ~/.bashrc in sync so login shells (used by HAL for shell commands) get the fresh token
+sed -i '/export GH_TOKEN=/d' /home/ssm-user/.bashrc
+echo "export GH_TOKEN=${TOKEN}" >> /home/ssm-user/.bashrc
+
 # Also update the running systemd session so gh CLI works immediately
 systemctl --user set-environment GH_TOKEN="$TOKEN"
 
-# Update openclaw config (takes effect on next gateway start)
+# Update openclaw config and restart gateway to apply
 openclaw config set env.vars.GH_TOKEN "$TOKEN"
 openclaw config set env.vars.GITHUB_TOKEN "$TOKEN"
+openclaw gateway restart
