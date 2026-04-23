@@ -77,8 +77,7 @@ OpenClaw (HAL) authenticates to GitHub as `noxx-hal[bot]` using a GitHub App ins
 - A Lambda function (`openclaw-github-token-provider`, `us-west-2`) retrieves the GitHub App credentials from AWS Secrets Manager (`/openclaw/github-app`), generates a JWT, and exchanges it for a short-lived installation token (valid 1 hour).
 - Two wrapper scripts on the EC2 instance call this Lambda:
   - `get-git-credential.sh` — Git credential helper; called automatically by git on every HTTPS clone/push/pull.
-  - `refresh-github-token.sh` — called by a cron job every 50 minutes to refresh the token in the systemd environment and OpenClaw config.
-- The cron job also updates `GH_TOKEN` via `systemctl --user set-environment` so the `gh` CLI picks it up in shell commands.
+  - `refresh-github-token.sh` — called by a cron job every 50 minutes to refresh the token. Updates `GH_TOKEN` via `systemctl --user set-environment`, takes effect immediately for the running gateway and writes it to `github-token.env` (picked up on next gateway start).
 
 ## Deploying wrapper scripts
 
