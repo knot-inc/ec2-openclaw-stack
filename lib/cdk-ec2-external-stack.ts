@@ -55,6 +55,7 @@ export class CdkEc2ExternalStack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
+      creditSpecification: ec2.CpuCredits.UNLIMITED,
     });
 
     // Prevent the instance from being deleted or replaced by CloudFormation

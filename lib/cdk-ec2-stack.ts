@@ -128,6 +128,7 @@ export class CdkEc2Stack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
+      creditSpecification: ec2.CpuCredits.UNLIMITED,
     });
 
     // Prevent the instance from being deleted or replaced by CloudFormation
@@ -168,6 +169,7 @@ export class CdkEc2Stack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
+      creditSpecification: ec2.CpuCredits.UNLIMITED,
     });
 
     // Prevent the dev instance from being deleted or replaced by CloudFormation
