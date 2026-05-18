@@ -42,6 +42,11 @@ export class CdkIamCrossAccountStack extends cdk.Stack {
           "states:ListStateMachines",
           "lambda:InvokeFunction",
           "lambda:ListFunctions",
+          "guardduty:ListDetectors",
+          "guardduty:GetDetector",
+          "guardduty:ListFindings",
+          "guardduty:GetFindings",
+          "guardduty:GetFindingsStatistics",
         ],
         resources: ["*"],
       }),
@@ -49,7 +54,8 @@ export class CdkIamCrossAccountStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "CrossAccountRoleArn", {
       value: role.roleArn,
-      description: "ARN of the OpenClaw cross-account role (provide to the bot config)",
+      description:
+        "ARN of the OpenClaw cross-account role (provide to the bot config)",
     });
   }
 }
