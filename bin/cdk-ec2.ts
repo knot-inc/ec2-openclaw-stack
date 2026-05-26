@@ -9,10 +9,16 @@ import { CdkEc2ExternalStack } from "../lib/cdk-ec2-external-stack";
 
 const app = new cdk.App();
 
+if (!process.env.PROD_ACCOUNT_ID || !process.env.DEV_ACCOUNT_ID) {
+  throw new Error(
+    "Missing required environment variables: PROD_ACCOUNT_ID and DEV_ACCOUNT_ID must be set in a .env file. " +
+      "See the Prerequisites section in README.md.",
+  );
+}
+
 // DEV_ACCOUNT_ID takes precedence over CDK_DEFAULT_ACCOUNT so the correct dev
 // account is used even when deploying the prod stack with a prod AWS profile.
-const devAccountId =
-  process.env.DEV_ACCOUNT_ID ?? process.env.CDK_DEFAULT_ACCOUNT;
+const devAccountId = process.env.DEV_ACCOUNT_ID;
 const prodAccountId = process.env.PROD_ACCOUNT_ID;
 
 new CdkEc2Stack(app, "CdkEc2Stack", {
