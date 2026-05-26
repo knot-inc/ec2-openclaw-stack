@@ -27,6 +27,9 @@ importers:
       aws-cdk:
         specifier: ^2.1108.0
         version: 2.1108.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       esbuild:
         specifier: ^0.28.0
         version: 0.28.0
@@ -1046,6 +1049,10 @@ packages:
   diff@4.0.4:
     resolution: {integrity: sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==}
     engines: {node: '>=0.3.1'}
+
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
+    engines: {node: '>=12'}
 
   electron-to-chromium@1.5.302:
     resolution: {integrity: sha512-sM6HAN2LyK82IyPBpznDRqlTQAtuSaO+ShzFiWTvoMJLHyZ+Y39r8VMfHzwbU8MVBzQ4Wdn85+wlZl2TLGIlwg==}
@@ -3141,6 +3148,8 @@ snapshots:
   diff-sequences@29.6.3: {}
 
   diff@4.0.4: {}
+
+  dotenv@17.4.2: {}
 
   electron-to-chromium@1.5.302: {}
 

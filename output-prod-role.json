@@ -1,0 +1,5 @@
+{
+  "OpenClawCrossAccountProd": {
+    "CrossAccountRoleArn": "arn:aws:iam::392440378596:role/OpenClawCrossAccountRole"
+  }
+}
