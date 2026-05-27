@@ -5,32 +5,34 @@ EC2 Instance for OpenClaw
 
 # Deploy
 
+## Prerequisites
+
+All deploy commands read account IDs from a `.env` file in the repo root. Create one if it doesn't exist:
+
+```
+DEV_ACCOUNT_ID=<dev-account-id>
+PROD_ACCOUNT_ID=<prod-account-id>
+```
+
+The `.env` file is gitignored and never committed. Both values are required — without them the deploy will use the wrong account IDs and IAM permissions will be incorrect.
+
 ## EC2 + dev instance role
 
 Deploys the OpenClaw EC2 instances and their IAM role (`OpenClawInstanceRole`) into the dev account. This is the standard deploy you run for any change to the EC2 or its permissions.
 
 ```
-npm install
-npx cdk synth --profile {profile} --region {region}
+pnpm install
 pnpm deploy:ec2-dev
 ```
-
-> **Important:** If you also need cross-account prod access, deploy with `PROD_ACCOUNT_ID` set so the `sts:AssumeRole` policy is added to the instance role. Without it, the bot won't be able to assume the prod cross-account role at runtime:
->
-> ```
-> PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:ec2-dev
-> ```
 
 ## Cross-account role (prod access)
 
 Use this when you need OpenClaw to read AWS resources in the **prod account** (CloudWatch alarms, Step Functions executions, Lambda invocations). This deploys a single IAM role (`OpenClawCrossAccountRole`) into the prod account that trusts the dev account's `OpenClawInstanceRole`.
 
-Only needs to be run once (or when prod permissions change). Requires prod AWS credentials to be setup as `noxx-prod`.
-
-`DEV_ACCOUNT_ID` must be set explicitly — CDK overwrites `CDK_DEFAULT_ACCOUNT` with the prod account when using the prod profile, so the trust policy would point to the wrong account without it.
+Only needs to be run once (or when prod permissions change). Requires prod AWS credentials to be set up as `noxx-prod`.
 
 ```
-DEV_ACCOUNT_ID=<dev-account-id> PROD_ACCOUNT_ID=<prod-account-id> pnpm deploy:iam-cross-account-prod
+pnpm deploy:iam-cross-account-prod
 ```
 
 Once deployed, the OpenClaw bot can assume the prod role at runtime using `sts:AssumeRole` — no credentials are stored on the instance.
