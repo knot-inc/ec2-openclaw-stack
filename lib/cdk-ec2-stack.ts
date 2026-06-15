@@ -115,6 +115,29 @@ export class CdkEc2Stack extends cdk.Stack {
       }),
     );
 
+    // UserData script to configure swap and protect SSM agent from OOM killer.
+    // **Use this for any new instance!**
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      // Configure 2GB swap file
+      "dd if=/dev/zero of=/swapfile bs=1M count=2048",
+      "chmod 600 /swapfile",
+      "mkswap /swapfile",
+      "swapon /swapfile",
+      "echo '/swapfile none swap sw 0 0' >> /etc/fstab",
+      // Protect SSM agent from OOM killer
+      "mkdir -p /etc/systemd/system/amazon-ssm-agent.service.d",
+      "cat <<'EOF' > /etc/systemd/system/amazon-ssm-agent.service.d/override.conf",
+      "[Service]",
+      "OOMScoreAdjust=-1000",
+      "Restart=always",
+      "RestartSec=15",
+      "StartLimitIntervalSec=0",
+      "EOF",
+      "systemctl daemon-reload",
+      "systemctl restart amazon-ssm-agent",
+    );
+
     // Create the EC2 instance
     const instance = new ec2.Instance(this, "clawInstance", {
       vpc,
@@ -131,7 +154,8 @@ export class CdkEc2Stack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
-      creditSpecification: ec2.CpuCredits.UNLIMITED,
+      // WARNING: We are intentionally not adding user data because this will replace the existing instance.
+      // userData,
     });
 
     // Prevent the instance from being deleted or replaced by CloudFormation
@@ -172,7 +196,8 @@ export class CdkEc2Stack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
-      creditSpecification: ec2.CpuCredits.UNLIMITED,
+      // WARNING: We are intentionally not adding user data because this will replace the existing instance.
+      // userData,
     });
 
     // Prevent the dev instance from being deleted or replaced by CloudFormation
