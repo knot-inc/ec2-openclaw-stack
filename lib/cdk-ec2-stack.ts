@@ -131,6 +131,7 @@ export class CdkEc2Stack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
+      creditSpecification: ec2.CpuCredits.UNLIMITED,
     });
 
     // Prevent the instance from being deleted or replaced by CloudFormation
@@ -163,7 +164,7 @@ export class CdkEc2Stack extends cdk.Stack {
       },
       instanceType: ec2.InstanceType.of(
         ec2.InstanceClass.T3,
-        ec2.InstanceSize.SMALL,
+        ec2.InstanceSize.MEDIUM,
       ),
       machineImage: ec2.MachineImage.genericLinux({
         "us-west-2": "ami-0320940581663281e", // Amazon Linux 2023 - fixed version
@@ -171,6 +172,7 @@ export class CdkEc2Stack extends cdk.Stack {
       securityGroup,
       role,
       associatePublicIpAddress: true,
+      creditSpecification: ec2.CpuCredits.UNLIMITED,
     });
 
     // Prevent the dev instance from being deleted or replaced by CloudFormation
