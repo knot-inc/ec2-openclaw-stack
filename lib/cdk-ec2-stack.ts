@@ -66,6 +66,11 @@ export class CdkEc2Stack extends cdk.Stack {
           "states:ListStateMachines",
           "lambda:InvokeFunction",
           "lambda:ListFunctions",
+          "guardduty:ListDetectors",
+          "guardduty:GetDetector",
+          "guardduty:ListFindings",
+          "guardduty:GetFindings",
+          "guardduty:GetFindingsStatistics",
         ],
         resources: ["*"],
       }),
@@ -100,17 +105,15 @@ export class CdkEc2Stack extends cdk.Stack {
       }),
     );
 
-    // Prod account - cross-account access via assume role (only added when PROD_ACCOUNT_ID is set)
-    if (prodAccountId) {
-      role.addToPolicy(
-        new iam.PolicyStatement({
-          actions: ["sts:AssumeRole"],
-          resources: [
-            `arn:aws:iam::${prodAccountId}:role/OpenClawCrossAccountRole`,
-          ],
-        }),
-      );
-    }
+    // Prod account - cross-account access via assume role
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ["sts:AssumeRole"],
+        resources: [
+          `arn:aws:iam::${prodAccountId}:role/OpenClawCrossAccountRole`,
+        ],
+      }),
+    );
 
     // Create the EC2 instance
     const instance = new ec2.Instance(this, "clawInstance", {
