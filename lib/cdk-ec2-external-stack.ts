@@ -42,12 +42,14 @@ export class CdkEc2ExternalStack extends cdk.Stack {
     // UserData script to configure swap and protect SSM agent from OOM killer
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
-      // Configure 2GB swap file
-      "dd if=/dev/zero of=/swapfile bs=1M count=2048",
-      "chmod 600 /swapfile",
-      "mkswap /swapfile",
-      "swapon /swapfile",
-      "echo '/swapfile none swap sw 0 0' >> /etc/fstab",
+      // Configure 512MB swap file (keep small to avoid filling the 8GB root volume)
+      "if [ ! -f /swapfile ]; then",
+      "  dd if=/dev/zero of=/swapfile bs=1M count=512",
+      "  chmod 600 /swapfile",
+      "  mkswap /swapfile",
+      "fi",
+      "swapon /swapfile || true",
+      "grep -q '/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' >> /etc/fstab",
       // Protect SSM agent from OOM killer
       "mkdir -p /etc/systemd/system/amazon-ssm-agent.service.d",
       "cat <<'EOF' > /etc/systemd/system/amazon-ssm-agent.service.d/override.conf",
