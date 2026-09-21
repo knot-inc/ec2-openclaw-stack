@@ -62,6 +62,8 @@ deploy_wrapper() {
 deploy_wrapper "get-git-credential.sh"
 # Refreshes the GitHub App token every 50 min via systemd env + openclaw config
 deploy_wrapper "refresh-github-token.sh"
+# Refreshes the Agentic API dev access secret
+deploy_wrapper "refresh-agentic-access-secret.sh"
 
 echo ""
 echo "Wrapper scripts deployed to $INSTANCE_ID."
