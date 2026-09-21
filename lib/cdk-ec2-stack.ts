@@ -76,6 +76,15 @@ export class CdkEc2Stack extends cdk.Stack {
       }),
     );
 
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [
+          `arn:aws:secretsmanager:us-west-2:${this.account}:secret:agentic-api-dev-access-secret*`,
+        ],
+      }),
+    );
+
     // Lambda: GitHub App token provider
     // Handles all token generation logic (JWT signing + GitHub API) so EC2 stays logic-free.
     const githubTokenProvider = new lambda_nodejs.NodejsFunction(
